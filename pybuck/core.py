@@ -1,4 +1,5 @@
 __all__ = [
+    "add_col",
     "col_matrix",
     "row_matrix",
     "gather",
@@ -7,7 +8,8 @@ __all__ = [
 ]
 
 from numpy import nan
-from pandas import DataFrame, melt
+from pandas import DataFrame, melt, merge
+import warnings
 
 ## Helper functions
 # --------------------------------------------------
@@ -80,11 +82,14 @@ def transpose(df, rowname="rowname"):
 
 ## Constructor functions
 # --------------------------------------------------
-def col_matrix(**kwargs):
+def col_matrix(rowname="rowname", **kwargs):
     """Create a matrix via column construction. Automatically fills zero entries.
     Intended for use with dict().
 
+    @param rowname Name of rowname column; default = "rowname"
     @param col Name of col
+
+    @type rowname string
     @type col dict
 
     @returns Dense matrix
@@ -100,6 +105,7 @@ def col_matrix(**kwargs):
         mu  = dict(M=1, L=-1, T=-1),
         eps = dict(L=1)
     )
+
     """
     ## Get full list of rows and columns
     cols = []
@@ -113,7 +119,7 @@ def col_matrix(**kwargs):
 
     ## Build matrix
     n_rows = len(rows)
-    data = {"rowname": rows}
+    data = {rowname: rows}
 
     for col in cols:
         col_values = [0] * n_rows
@@ -123,7 +129,7 @@ def col_matrix(**kwargs):
 
     return DataFrame(data)
 
-def row_matrix(**kwargs):
+def row_matrix(rowname="rowname", **kwargs):
     """Create a matrix via row construction. Automatically fills zero entries.
     Intended for use with dict().
 
@@ -141,5 +147,58 @@ def row_matrix(**kwargs):
         R  = dict(D=1, eps=-1)
     )
     """
-    df_col = col_matrix(**kwargs)
+    df_col = col_matrix(rowname=rowname, **kwargs)
     return transpose(df_col)
+
+def add_col(df, rowname="rowname", **kwargs):
+    """Add a column to a DataFrame, matching existing rownames.
+
+    @param df Data to mutate
+    @param rowname Rownames to match; default = "rowname"
+    @param col Column to add; name inferred from keyword. May provide
+               as array of proper length or as dict.
+
+    @type df DataFrame
+    @type rowname string
+    @type col array or dict
+
+    @returns df with added columns
+    @rtype DataFrame
+
+    @pre (len(col) == df.shape[0]) | isinstance(col, dict)
+
+    Examples:
+
+    from pybuck import *
+
+    df = col_matrix(rho = dict(M=1, L=-3), U = dict(L=1, T=-1))
+    df = add_col(df, D=dict(L=1), v=[0,0,1])
+
+    """
+    ## Check invariants
+    if not (rowname in df.columns):
+        raise ValueError("df must have {} column".format(rowname))
+
+    df_return = df.copy()
+
+    for key, value in kwargs.items():
+        if isinstance(value, dict):
+            df_tmp = DataFrame({
+                rowname: list(value.keys()),
+                key: list(value.values())
+            })
+
+            df_return = merge(
+                df_return,
+                df_tmp,
+                on=rowname,
+                how="left"
+            ).fillna(value=0)
+        else:
+            warnings.warn(
+                "Assuming {0:} ordering for {1:}...".format(rowname, key),
+                RuntimeWarning
+            )
+            df_return[key] = value
+
+    return df_return

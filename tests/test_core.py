@@ -24,6 +24,34 @@ class TestConstructors(unittest.TestCase):
             "eps":     [   0,   1]
         }).sort_values("rowname").reset_index(drop=True)
 
+    def test_add_col(self):
+        df_ful = bu.col_matrix(
+            rho = dict(M=1, L=-3),
+            U   = dict(L=1, T=-1),
+            D   = dict(L=1)
+        ).sort_values("rowname") \
+         .reset_index(drop=True)
+
+        df_sub = bu.col_matrix(rho = dict(M=1, L=-3), U = dict(L=1, T=-1))
+
+        df_res = bu.add_col(df_sub, D=dict(L=1)) \
+                   .sort_values("rowname") \
+                   .reset_index(drop=True)
+
+        pd.testing.assert_frame_equal(
+            df_ful,
+            df_res,
+            check_exact=False,
+            check_dtype=False,
+            check_column_type=False
+        )
+
+        with self.assertRaises(ValueError):
+            bu.add_col(pd.DataFrame(), D=dict(M=1))
+
+        with self.assertWarns(Warning):
+            bu.add_col(df_sub, D=[0, 1, 0])
+
     def test_col_matrix(self):
         df_dim = bu.col_matrix(
             rho = dict(M=1, L=-3),
@@ -46,6 +74,16 @@ class TestConstructors(unittest.TestCase):
         self.assertTrue(
             self.df_pi[df_pi.columns].equals(df_pi)
         )
+
+    def test_rowname(self):
+        df_tmp = bu.col_matrix(x=dict(a=1), rowname="foo")
+
+        df_ref = pd.DataFrame({
+            "foo": ["a"],
+            "x":   [  1]
+        })
+
+        self.assertTrue(df_ref.equals(df_tmp))
 
 # --------------------------------------------------
 class TestReshape(unittest.TestCase):
