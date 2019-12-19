@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 import pandas as pd
 
 from context import pybuck as bu
@@ -62,6 +63,44 @@ class TestExpress(unittest.TestCase):
 
         with self.assertWarns(Warning):
             bu.express(self.df_b1_ill, self.df_basis)
+
+# --------------------------------------------------
+class TestNull(unittest.TestCase):
+    def setUp(self):
+        self.A = np.array([
+            [ 1, 0, 0],
+            [ 0, 1, 0]
+        ])
+        self.N = np.array([
+            [ 0],
+            [ 0],
+            [ 1]
+        ])
+
+    def test_null(self):
+        res = bu.null(self.A)
+        self.assertTrue(np.array_equal(res, self.N))
+
+# --------------------------------------------------
+class TestPiBasis(unittest.TestCase):
+    def setUp(self):
+        self.df_dim = bu.col_matrix(
+            x = dict(M=1),
+            y = dict(M=1)
+        )
+        self.df_pi = bu.col_matrix(
+            pi0 = dict(x=-1 / np.sqrt(2), y=+1 / np.sqrt(2))
+        )
+
+    def test_pi_basis(self):
+        df_res = bu.pi_basis(self.df_dim)
+
+        self.assertTrue(
+            np.isclose(bu.angles(df_res, self.df_pi), 0)
+        )
+
+        with self.assertRaises(ValueError):
+            bu.pi_basis(pd.DataFrame())
 
 ## Run tests
 if __name__ == "__main__":
