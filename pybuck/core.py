@@ -14,6 +14,9 @@ import warnings
 ## Helper functions
 # --------------------------------------------------
 def gather(df, key, value, cols):
+    """Makes a DataFrame longer by gathering columns.
+
+    """
     id_vars = [col for col in df.columns if col not in cols]
     id_values = cols
     var_name = key
@@ -22,6 +25,9 @@ def gather(df, key, value, cols):
     return melt(df, id_vars, id_values, var_name=var_name, value_name=value_name)
 
 def spread(df, key, value, fill=nan, drop=False):
+    """Makes a DataFrame wider by spreading columns.
+
+    """
     index = [col for col in df.columns if ((col != key) and (col != value))]
 
     df_new = df.pivot_table(
@@ -42,14 +48,14 @@ def transpose(df, rowname="rowname"):
     """
     Transpose a dataframe around a single `rowname` column.
 
-    @param df Matrix to transpose, must have column `rowname`
-    @param rowname Rownames which define new column names
+    :param df: Matrix to transpose, must have column `rowname`
+    :param rowname: Rownames which define new column names
 
-    @type df DataFrame
-    @type rowname string
+    :type df: DataFrame
+    :type rowname: string
 
-    @returns Transposed result
-    @rtype DataFrame
+    :returns: Transposed result
+    :rtype: DataFrame
 
     Examples:
 
@@ -86,14 +92,14 @@ def col_matrix(rowname="rowname", **kwargs):
     """Create a matrix via column construction. Automatically fills zero entries.
     Intended for use with dict().
 
-    @param rowname Name of rowname column; default = "rowname"
-    @param col Name of col
+    :param rowname: Name of rowname column; default = "rowname"
+    :param col: Name of col
 
-    @type rowname string
-    @type col dict
+    :type rowname: string
+    :type col: dict
 
-    @returns Dense matrix
-    @rtype DataFrame
+    :returns: Dense matrix
+    :rtype: DataFrame
 
     Examples:
 
@@ -133,11 +139,11 @@ def row_matrix(rowname="rowname", **kwargs):
     """Create a matrix via row construction. Automatically fills zero entries.
     Intended for use with dict().
 
-    @param row Name of row
-    @type row dict
+    :param row: Name of row
+    :type row: dict
 
-    @returns Dense matrix
-    @rtype DataFrame
+    :returns: Dense matrix
+    :rtype: DataFrame
 
     Examples:
 
@@ -153,19 +159,19 @@ def row_matrix(rowname="rowname", **kwargs):
 def add_col(df, rowname="rowname", **kwargs):
     """Add a column to a DataFrame, matching existing rownames.
 
-    @param df Data to mutate
-    @param rowname Rownames to match; default = "rowname"
-    @param col Column to add; name inferred from keyword. May provide
+    :param df: Data to mutate
+    :param rowname: Rownames to match; default = "rowname"
+    :param col: Column to add; name inferred from keyword. May provide
                as array of proper length or as dict.
 
-    @type df DataFrame
-    @type rowname string
-    @type col array or dict
+    :type df: DataFrame
+    :type rowname: string
+    :type col: array or dict
 
-    @returns df with added columns
-    @rtype DataFrame
+    :returns: df with added columns
+    :rtype: DataFrame
 
-    @pre (len(col) == df.shape[0]) | isinstance(col, dict)
+    :pre: (len(col) == df.shape[0]) | isinstance(col, dict)
 
     Examples:
 

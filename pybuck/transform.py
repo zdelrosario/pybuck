@@ -24,15 +24,18 @@ def express(df, df_basis, rowname="rowname", ktol=1e6):
         A = df_basis.values
         B = df.values
 
-    @param df Given set of vectors to re-express
-    @param df_basis Given basis
-    @param rowname Column name of rownames, default "rowname"
-    @param ktol Maximum condition number for basis, default 1e6
+    :param df: Given set of vectors to re-express
+    :param df_basis: Given basis
+    :param rowname: Column name of rownames, default "rowname"
+    :param ktol: Maximum condition number for basis, default 1e6
 
-    @type df DataFrame
-    @type df_basis DataFrame
-    @type rowname string
-    @type ktol float
+    :type df: DataFrame
+    :type df_basis: DataFrame
+    :type rowname: string
+    :type ktol: float
+
+    :returns: Set of re-expressed vectors
+    :rtype: DataFrame
 
     Examples:
 
@@ -103,14 +106,14 @@ def express(df, df_basis, rowname="rowname", ktol=1e6):
 def null(A, eps=1e-15):
     """Computes a basis for the nullspace of a matrix
 
-    @param A Rectangular matrix
-    @param eps Singular value tolerance for nullspace detection
+    :param A: Rectangular matrix
+    :param eps: Singular value tolerance for nullspace detection
 
-    @type A numpy 2d array
-    @type eps float
+    :type A: numpy 2d array
+    :type eps: float
 
-    @returns basis for matrix nullspace
-    @rtype numpy 2d array
+    :returns: basis for matrix nullspace
+    :rtype: numpy 2d array
 
     Examples:
 
@@ -132,16 +135,16 @@ def null(A, eps=1e-15):
 def pi_basis(df, eps=1e-15, rowname="rowname"):
     """Computes a basis for the pi subspace.
 
-    @param df Dimension matrix
-    @param eps Singular value tolerance; default = 1e-15
-    @param rowname Column name of rownames, default "rowname"
+    :param df: Dimension matrix
+    :param eps: Singular value tolerance; default = 1e-15
+    :param rowname: Column name of rownames, default "rowname"
 
-    @type df DataFrame
-    @type eps float
-    @type rowname string
+    :type df: DataFrame
+    :type eps: float
+    :type rowname: string
 
-    @returns Basis for pi subspace
-    @rtype DataFrame
+    :returns: Basis for pi subspace
+    :rtype: DataFrame
 
     Examples:
 
