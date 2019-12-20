@@ -5,6 +5,7 @@ __all__ = [
     "pi_basis"
 ]
 
+from .core import add_row
 from numpy import pad, dot
 from numpy.linalg import lstsq, cond
 from pandas import DataFrame, Categorical
@@ -52,6 +53,16 @@ def inner(df, df_weights, rowname="rowname"):
         raise ValueError(
             "df_weights[{}] must be subset of df.columns".format(rowname)
         )
+
+    ## Add rows not in df_weights
+    rows_missing = list(
+        set(df.drop(rowname, axis=1).columns) - set(df_weights[rowname])
+    )
+    pack = {
+        rows_missing[i]: [0] * (df_weights.shape[1] - 1) \
+        for i in range(len(rows_missing))
+    }
+    df_weights = add_row(df_weights, **pack)
 
     ## Arrange
     df_weights["_tmp"] = Categorical(

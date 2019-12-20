@@ -14,25 +14,37 @@ class TestInner(unittest.TestCase):
             v = dict(x=+1, y=+1),
             w = dict(x=-1, y=+1)
         )
-        df_weights = bu.col_matrix(z = dict(v=1, w=1))
-        df_res = bu.inner(df, df_weights)
 
-        df_true = bu.col_matrix(z = dict(x=0, y=2))
+        # Full weights
+        df_w1 = bu.col_matrix(z = dict(v=1, w=1))
+        df_r1 = bu.inner(df, df_w1)
+        df_t1 = bu.col_matrix(z = dict(x=0, y=2))
+
+        # Missing weights
+        df_w2 = bu.col_matrix(z = dict(v=1))
+        df_r2 = bu.inner(df, df_w2)
+        df_t2 = bu.col_matrix(z = dict(x=+1, y=+1))
 
         pd.testing.assert_frame_equal(
-            df_res,
-            df_true,
+            df_r1,
+            df_t1,
+            check_exact=False
+        )
+
+        pd.testing.assert_frame_equal(
+            df_r2,
+            df_t2,
             check_exact=False
         )
 
         with self.assertRaises(ValueError):
-            bu.inner(pd.DataFrame(), df_weights)
+            bu.inner(pd.DataFrame(), df_w1)
 
         with self.assertRaises(ValueError):
             bu.inner(df, pd.DataFrame())
 
         with self.assertRaises(ValueError):
-            bu.inner(bu.col_matrix(w=dict(x=1, y=1)), df_weights)
+            bu.inner(bu.col_matrix(w=dict(x=1, y=1)), df_w1)
 
 # --------------------------------------------------
 class TestExpress(unittest.TestCase):
