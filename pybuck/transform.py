@@ -1,14 +1,15 @@
 __all__ = [
     "express",
     "inner",
+    "nondim",
     "null",
     "pi_basis"
 ]
 
-from .core import add_row
+from .core import add_row, pad_row, transpose
 from numpy import pad, dot
 from numpy.linalg import lstsq, cond
-from pandas import DataFrame, Categorical
+from pandas import DataFrame, Categorical, concat
 from scipy.linalg import svd
 from scipy import compress
 from scipy import transpose as t_mat
@@ -256,3 +257,45 @@ def pi_basis(df, eps=1e-15, rowname="rowname"):
         df_return["pi{}".format(i)] = N[:, i]
 
     return df_return
+
+## Canonical non-dimensionalizing factor
+def nondim(df, df_dim, rowname="rowname", ktol=1e6, eps=1e-15):
+    """Computes the canonical non-dimensionalizing factor for given physical
+    quantities
+
+    :param df: Dimensions of target quantity, column per quantity
+    :param df_dim: Dimension matrix for physical system
+
+    :type df: DataFrame
+    :type df: DataFrame
+
+    :returns: Canonical non-dimensionalizing factor(s)
+    :rtype: DataFrame
+
+    Examples:
+
+    References:
+    Z. del Rosario, M. Lee, and G. Iaccarino, "Lurking Variable Detection via Dimensional Analysis" (2019) SIAM/ASA Journal on Uncertainty Quantification
+
+    """
+    ## Check invariants
+    if not (rowname in df.columns):
+        raise ValueError("df must have {} column".format(rowname))
+    if not (rowname in df_dim.columns):
+        raise ValueError("df_dim must have {} column".format(rowname))
+    if not (set(df[rowname]).issubset(set(df_dim[rowname]))):
+        raise ValueError("df[rowname] must be subset of df_dim[rowname]")
+
+    ## Set up linear system
+    df_null = pi_basis(df_dim, eps=eps, rowname=rowname)
+    df_stacked = concat(
+        (df_dim, transpose(df_null)),
+        axis=0,
+        sort=False,
+        ignore_index=True
+    )
+    df = pad_row(df, df_stacked)
+
+    df_res = express(df, df_stacked, rowname="rowname", ktol=1e6)
+
+    return df_res

@@ -144,6 +144,31 @@ class TestPiBasis(unittest.TestCase):
         with self.assertRaises(ValueError):
             bu.pi_basis(pd.DataFrame())
 
+# --------------------------------------------------
+class TestNondim(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def test_nondim(self):
+        df_dim = bu.row_matrix(L = dict(u=1, v=1))
+        df = bu.col_matrix(q = dict(L=1))
+        df_res = bu.nondim(df, df_dim)
+
+        df_true = bu.col_matrix(q = dict(u=0.5, v=0.5))
+
+        pd.testing.assert_frame_equal(
+            df_res,
+            df_true,
+            check_exact=False
+        )
+
+        with self.assertRaises(ValueError):
+            bu.nondim(pd.DataFrame(), df_dim)
+        with self.assertRaises(ValueError):
+            bu.nondim(df, pd.DataFrame())
+        with self.assertRaises(ValueError):
+            bu.nondim(bu.col_matrix(q = dict(T=1)), df_dim)
+
 ## Run tests
 if __name__ == "__main__":
     unittest.main()
