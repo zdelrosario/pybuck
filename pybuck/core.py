@@ -1,5 +1,6 @@
 __all__ = [
     "add_col",
+    "add_row",
     "col_matrix",
     "row_matrix",
     "gather",
@@ -208,3 +209,35 @@ def add_col(df, rowname="rowname", **kwargs):
             df_return[key] = value
 
     return df_return
+
+def add_row(df, rowname="rowname", **kwargs):
+    """Add a column to a DataFrame, matching existing rownames.
+
+    :param df: Data to mutate
+    :param rowname: Rownames to match; default = "rowname"
+    :param row: Row to add; name inferred from keyword. May provide
+                as array of proper length or as dict.
+
+    :type df: DataFrame
+    :type rowname: string
+    :type row: array or dict
+
+    :returns: df with added rows
+    :rtype: DataFrame
+
+    :pre: (len(row) == df.shape[1]) | isinstance(col, dict)
+
+    Examples:
+
+    from pybuck import *
+
+    df = row_matrix(v = dict(x=1, y=1, z=1))
+    df = add_row(df, w = dict(y=-1))
+    df
+
+    """
+    ## Implement in terms of add_col()
+    df_tmp = transpose(df, rowname=rowname)
+    df_tmp = add_col(df_tmp, rowname=rowname, **kwargs)
+
+    return transpose(df_tmp, rowname=rowname)

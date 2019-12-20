@@ -52,6 +52,23 @@ class TestConstructors(unittest.TestCase):
         with self.assertWarns(Warning):
             bu.add_col(df_sub, D=[0, 1, 0])
 
+    def test_add_row(self):
+        df = bu.row_matrix(v = dict(x=1, y=1))
+        df_res = bu.add_row(df, w = dict(y=1))
+
+        df_true = bu.row_matrix(
+            v = dict(x=1, y=1),
+            w = dict(y=1)
+        )
+
+        pd.testing.assert_frame_equal(
+            df_res,
+            df_true,
+            check_exact=False,
+            check_dtype=False,
+            check_column_type=False
+        )
+
     def test_col_matrix(self):
         df_dim = bu.col_matrix(
             rho = dict(M=1, L=-3),
