@@ -5,6 +5,36 @@ import pandas as pd
 from context import pybuck as bu
 
 # --------------------------------------------------
+class TestInner(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def test_inner(self):
+        df = bu.col_matrix(
+            v = dict(x=+1, y=+1),
+            w = dict(x=-1, y=+1)
+        )
+        df_weights = bu.col_matrix(z = dict(v=1, w=1))
+        df_res = bu.inner(df, df_weights)
+
+        df_true = bu.col_matrix(z = dict(x=0, y=2))
+
+        pd.testing.assert_frame_equal(
+            df_res,
+            df_true,
+            check_exact=False
+        )
+
+        with self.assertRaises(ValueError):
+            bu.inner(pd.DataFrame(), df_weights)
+
+        with self.assertRaises(ValueError):
+            bu.inner(df, pd.DataFrame())
+
+        with self.assertRaises(ValueError):
+            bu.inner(bu.col_matrix(w=dict(x=1, y=1)), df_weights)
+
+# --------------------------------------------------
 class TestExpress(unittest.TestCase):
     def setUp(self):
         self.df_basis = \

@@ -1,16 +1,80 @@
 __all__ = [
     "express",
+    "inner",
     "null",
     "pi_basis"
 ]
 
-from numpy import pad
+from numpy import pad, dot
 from numpy.linalg import lstsq, cond
-from pandas import DataFrame
+from pandas import DataFrame, Categorical
 from scipy.linalg import svd
 from scipy import compress
 from scipy import transpose as t_mat
 import warnings
+
+## Inner product
+def inner(df, df_weights, rowname="rowname"):
+    """Compute the inner product between two matrices. Matches the
+    columns of df to the rows of df_weights.
+
+    :param df: Left matrix
+    :param df_weights: Right matrix
+    :param rowname: Column name of rownames, default "rowname"
+
+    :type df: DataFrame
+    :type df_weights: DataFrame
+    :type rowname: string
+
+    :returns: Inner product
+    :rtype: DataFrame
+
+    Examples:
+
+    from pybuck import *
+
+    df = col_matrix(
+        v = dict(x=+1, y=+1),
+        w = dict(x=-1, y=+1)
+    )
+    df_weights = col_matrix(z = dict(v=1, w=1))
+
+    df_res = inner(df, df_weights)
+    df
+
+    """
+    ## Check invariants
+    if not (rowname in df.columns):
+        raise ValueError("df must have {} column".format(rowname))
+    if not (rowname in df_weights.columns):
+        raise ValueError("df_weights must have {} column".format(rowname))
+    if not (set(df_weights[rowname]).issubset(set(df.columns))):
+        raise ValueError(
+            "df_weights[{}] must be subset of df.columns".format(rowname)
+        )
+
+    ## Arrange
+    df_weights["_tmp"] = Categorical(
+        df_weights[rowname],
+        df.drop(rowname, axis=1).columns
+    )
+    df_weights.sort_values("_tmp", inplace=True)
+
+    A = df.drop(rowname, axis=1).values
+    B = df_weights.drop([rowname, "_tmp"], axis=1).values
+
+    ## Compute inner product
+    X = dot(A, B)
+
+    ## Gather data
+    rownames = df[rowname]
+    colnames = df_weights.drop(rowname, axis=1).columns
+
+    data = {rowname: df[rowname]}
+    for i in range(X.shape[1]):
+        data[colnames[i]] = X[:, i]
+
+    return DataFrame(data)
 
 ## Re-expression
 def express(df, df_basis, rowname="rowname", ktol=1e6):
