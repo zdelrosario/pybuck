@@ -1,4 +1,9 @@
 # pybuck
+
+---
+
+[![Documentation Status](https://readthedocs.org/projects/pybuck/badge/?version=latest)](https://pybuck.readthedocs.io/en/latest/?badge=latest)
+
 This package supports [dimensional analysis](https://en.wikipedia.org/wiki/Dimensional_analysis) in Python.
 
 See the [demo](https://github.com/zdelrosario/pybuck/blob/master/examples/quick_demo.ipynb) for a quick look at package functionality.
