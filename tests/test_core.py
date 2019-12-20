@@ -69,6 +69,28 @@ class TestConstructors(unittest.TestCase):
             check_column_type=False
         )
 
+    def test_pad_row(self):
+        df = bu.row_matrix(u = dict(x=1, y=1))
+        df_ref = bu.row_matrix(
+            u = dict(x=1, y=1),
+            v = dict(x=0, y=0)
+        )
+
+        df_res = bu.pad_row(df, df_ref)
+
+        pd.testing.assert_frame_equal(
+            df_res,
+            df_ref,
+            check_exact=False,
+            check_dtype=False,
+            check_column_type=False
+        )
+
+        with self.assertRaises(ValueError):
+            bu.pad_row(pd.DataFrame(), df_ref)
+        with self.assertRaises(ValueError):
+            bu.pad_row(df, pd.DataFrame())
+
     def test_col_matrix(self):
         df_dim = bu.col_matrix(
             rho = dict(M=1, L=-3),

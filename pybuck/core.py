@@ -4,6 +4,7 @@ __all__ = [
     "col_matrix",
     "row_matrix",
     "gather",
+    "pad_row",
     "spread",
     "transpose"
 ]
@@ -241,3 +242,35 @@ def add_row(df, rowname="rowname", **kwargs):
     df_tmp = add_col(df_tmp, rowname=rowname, **kwargs)
 
     return transpose(df_tmp, rowname=rowname)
+
+def pad_row(df, df_ref, rowname="rowname"):
+    """Pad a target DataFrame with zero-rows to match a reference.
+
+    :param df: Data to pad
+    :param df_ref: Reference for padding
+
+    :type df: DataFrame
+    :type df_ref: DataFrame
+
+    :returns: Row-padded dataframe
+    :rtype: DataFrame
+    """
+    ## Check invariants
+    if not (rowname in df.columns):
+        raise ValueError("df must have {} column".format(rowname))
+    if not (rowname in df_ref.columns):
+        raise ValueError("df_ref must have {} column".format(rowname))
+
+    ## Add rows not in df
+    rows_missing = list(set(df_ref[rowname]) - set(df[rowname]))
+    pack = {
+        rows_missing[i]: [0] * (df.shape[1] - 1) \
+        for i in range(len(rows_missing))
+    }
+
+    ## Can ignore warning; we're zero-filling entire rows
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        df = add_row(df, **pack)
+
+    return df
