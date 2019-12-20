@@ -62,7 +62,11 @@ def inner(df, df_weights, rowname="rowname"):
         rows_missing[i]: [0] * (df_weights.shape[1] - 1) \
         for i in range(len(rows_missing))
     }
-    df_weights = add_row(df_weights, **pack)
+
+    ## Can ignore warning; we're zero-filling entire rows
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        df_weights = add_row(df_weights, **pack)
 
     ## Arrange
     df_weights["_tmp"] = Categorical(
