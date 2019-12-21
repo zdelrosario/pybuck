@@ -36,7 +36,10 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
-    "recommonmark"
+    # "sphinx.ext.mathjax",
+    "sphinx.ext.imgmath",
+    "recommonmark",
+    "sphinx_markdown_tables"
 ]
 
 autodoc_default_flags = ["members"]
@@ -62,3 +65,5 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+mathjax_path="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"

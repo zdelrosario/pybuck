@@ -50,7 +50,7 @@ transpose(df_res)
 0       q -1  1 -2
 ```
 
-Use `nondim` to compute the *canonical non-dimensionalizing factor* [1].
+Use `nondim` to compute the *canonical non-dimensionalizing factor* [Theorem 8.1, 1].
 
 ```python
 df_flowrate = col_matrix(Q = dict(M=1, L=-3, T=-1))

@@ -7,6 +7,8 @@ Welcome to pybuck's documentation!
 
    usage/overview
    usage/installation
+   usage/application
+   usage/theory
 
 .. autosummary::
    :toctree: stubs
