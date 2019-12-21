@@ -2,18 +2,16 @@
 
 ---
 
+[![Documentation Status](https://readthedocs.org/projects/pybuck/badge/?version=latest)](https://pybuck.readthedocs.io/en/latest/?badge=latest)
+
 This package supports [dimensional
 analysis](https://en.wikipedia.org/wiki/Dimensional_analysis) in Python.
 
 ## Install
 
----
-
 Clone repo and run `python setup.py install`.
 
 ## Example usage
-
----
 
 Use compact syntax to record the physical dimensions of quantities.
 
@@ -73,7 +71,5 @@ See the
 for a quick look at package functionality.
 
 # References
-
----
 
 [1] Z. del Rosario, M. Lee, and G. Iaccarino, "Lurking Variable Detection via Dimensional Analysis" (2019) SIAM/ASA Journal on Uncertainty Quantification
