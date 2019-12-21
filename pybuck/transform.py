@@ -265,9 +265,15 @@ def nondim(df, df_dim, rowname="rowname", ktol=1e6, eps=1e-15):
 
     :param df: Dimensions of target quantity, column per quantity
     :param df_dim: Dimension matrix for physical system
+    :param rowname: Column name of rownames, default "rowname"
+    :param ktol: Condition number warning tolerance; default 1e6
+    :param eps: Nullspace singular value threshold; default 1e-15
 
     :type df: DataFrame
     :type df: DataFrame
+    :type rowname: string
+    :type ktol: float
+    :type eps: float
 
     :returns: Canonical non-dimensionalizing factor(s)
     :rtype: DataFrame
@@ -275,7 +281,7 @@ def nondim(df, df_dim, rowname="rowname", ktol=1e6, eps=1e-15):
     Examples:
 
     References:
-    Z. del Rosario, M. Lee, and G. Iaccarino, "Lurking Variable Detection via Dimensional Analysis" (2019) SIAM/ASA Journal on Uncertainty Quantification
+    Z. del Rosario, M. Lee, and G. Iaccarino, "Lurking Variable Detection via Dimensional Analysis" (2019) SIAM/ASA Journal on Uncertainty Quantification (Theorem 8.1)
 
     """
     ## Check invariants
