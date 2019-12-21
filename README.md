@@ -1,7 +1,5 @@
 # Overview
 
----
-
 [![Documentation Status](https://readthedocs.org/projects/pybuck/badge/?version=latest)](https://pybuck.readthedocs.io/en/latest/?badge=latest)
 
 This package supports [dimensional
