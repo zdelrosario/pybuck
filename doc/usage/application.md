@@ -273,7 +273,7 @@ df_frz = pd.DataFrame(
     index=range(n_data),
     columns=Q_names
 )
-df_frz[\"f\"] = Fp_all
+df_frz["f"] = Fp_all
 ```
 
 We repeat computing a linear dimension reduction on the frozen data.
@@ -284,13 +284,13 @@ df_frz_log[Q_names] = np.log(df_frz_log[Q_names])
 df_frz_log
 
 lm_frz = smf.ols(
-    \"f ~ rho + U + D + mu\",
+    "f ~ rho + U + D + mu",
     data=df_frz_log
 ).fit()
 
 df_frz_dr = pd.DataFrame({
-    \"rowname\": lm_frz.params.index[1:],
-    \"pi\": lm_frz.params.values[1:]
+    "rowname": lm_frz.params.index[1:],
+    "pi": lm_frz.params.values[1:]
 })
 ```
 
