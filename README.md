@@ -3,7 +3,7 @@
 [![Documentation Status](https://readthedocs.org/projects/pybuck/badge/?version=latest)](https://pybuck.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.org/zdelrosario/pybuck.png?branch=master)](https://travis-ci.org/zdelrosario/pybuck)
 
 This package supports [dimensional
-analysis](https://en.wikipedia.org/wiki/Dimensional_analysis) in Python.
+analysis](https://en.wikipedia.org/wiki/Dimensional_analysis) in Python. See the [application guide](https://pybuck.readthedocs.io/en/latest/usage/application.html) for more examples of using `pybuck`. A quick tour follows below.
 
 ## Install
 
