@@ -1,1 +1,1 @@
-scipy
+sphinx-markdown-tables
