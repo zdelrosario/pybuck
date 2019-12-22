@@ -2,7 +2,9 @@
 
 ---
 
-This is a short description of applications of `pybuck`.
+This is a short description of applications of `pybuck`. See the
+[demo](https://github.com/zdelrosario/pybuck/blob/master/examples/quick_demo.ipynb)
+for an executable version of this tour.
 
 ## Setting up an analysis
 
@@ -147,13 +149,167 @@ of the two standard dimensionless numbers.
 
 ---
 
-TODO
+Next we demonstrate combining *empirical dimension reduction* with dimensional
+analysis. This allows one to equip data-driven methods with physical
+interpretation. First, we generate some data for the Reynolds pipe flow problem.
+This follows the setup described in Reference 2.
+
+```python
+import statsmodels.formula.api as smf
+import numpy as np
+import pandas as pd
+from model_pipe import fcn
+
+## Simulate collecting data
+np.random.seed(101)
+n_data = 500
+
+Q_names = ["rho", "U", "D", "mu", "eps"]
+Q_lo = np.array([1.0, 1.0e+0, 1.3, 1.0e-5, 0.5e-1])
+Q_hi = np.array([1.4, 1.0e+1, 1.7, 1.5e-5, 2.0e-1])
+Q_all = np.random.random((n_data, len(Q_lo))) * (Q_hi - Q_lo) + Q_lo
+
+F_all = np.zeros(n_data)
+for i in range(n_data):
+    res = fcn(Q_all[i])
+    F_all[i] = res
+
+df_data = pd.DataFrame(
+    data=Q_all,
+    index=range(n_data),
+    columns=Q_names
+)
+df_data["f"] = F_all
+```
+
+To perform empirical dimension reduction, we will carry out ordinary least
+squares to regress the output `f` on the inputs `rho, U, D, mu, eps`. However,
+if we **log transform** our inputs, any *linear* dimension reduction can be
+interpreted as a product of the inputs [2]. This will allow us to combine
+dimension reduction with dimensional analysis. To illustrate:
+
+```python
+df_log = df_data.copy()
+df_log[Q_names] = np.log(df_log[Q_names])
+df_log
+
+lm = smf.ols(
+    \"f ~ rho + U + D + mu + eps\",
+    data=df_log
+).fit()
+```
+
+We extract the regression coefficients with the following recipe.
+
+```python
+df_dr = pd.DataFrame({
+    "rowname": lm.params.index[1:],
+    "pi": lm.params.values[1:]
+})
+df_dr
+```
+
+```bash
+  rowname        pi
+0     rho  0.000658
+1       U -0.000247
+2       D -0.049711
+3      mu -0.000014
+4     eps  0.045981
+```
+
+We now check the physical units of the proposed direction.
+
+```python
+inner(df_dim, df_dr)
+```
+
+```bash
+  rowname        pi
+0       M  0.000644
+1       L -0.005936
+2       T  0.000261
+```
+
+This is very nearly dimensionless. We can re-express this number in terms of our
+standard basis.
+
+```python
+express(df_dr, df_standard)
+```
+
+```bash
+  rowname        pi
+0      Re -0.000412
+1       R  0.047640
+```
+
+Re-expression reveals that the empirical dimension reduction has recovered the
+relative roughness `R`, which fully describes the output variation in the
+setting considered.
 
 ## Lurking Variables
 
 ---
 
-TODO
+Finally, we slightly modify the problem above to demonstrate *lurking variable detection*.
+
+Suppose that during data collection we did not know that `eps` is a physical
+input. In this case, we would not know to vary it in our experiments, and it
+might remain fixed to an unknown value. To model this, we fix `eps=0.1` in data
+generation.
+
+```python
+## Generate frozen-eps data
+Fp_all = np.zeros(n_data)
+Qp_all = Q_all
+Qp_all[:, 4] = [0.1] * n_data
+
+for i in range(n_data):
+    Fp_all[i] = fcn(Qp_all[i])
+
+df_frz = pd.DataFrame(
+    data=Qp_all,
+    index=range(n_data),
+    columns=Q_names
+)
+df_frz[\"f\"] = Fp_all
+```
+
+We repeat computing a linear dimension reduction on the frozen data.
+
+```python
+df_frz_log = df_data.copy()
+df_frz_log[Q_names] = np.log(df_frz_log[Q_names])
+df_frz_log
+
+lm_frz = smf.ols(
+    \"f ~ rho + U + D + mu\",
+    data=df_frz_log
+).fit()
+
+df_frz_dr = pd.DataFrame({
+    \"rowname\": lm_frz.params.index[1:],
+    \"pi\": lm_frz.params.values[1:]
+})
+```
+
+Let's inspect the physical dimensions of `df_frz_dr`.
+
+```python
+inner(df_dim, df_frz_dr)
+```
+
+```bash
+  rowname        pi
+0       M -0.005219
+1       L -0.049977
+2       T  0.005100
+```
+
+This direction is not dimensionless! This indicates that a lurking variable is
+present, and it has units of `L`. This procedure has correctly identified the
+presence of our lurking variable `eps` which has dimensions $[\epsilon] = L$.
 
 ## References
 
