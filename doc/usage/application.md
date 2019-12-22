@@ -194,7 +194,7 @@ df_log[Q_names] = np.log(df_log[Q_names])
 df_log
 
 lm = smf.ols(
-    \"f ~ rho + U + D + mu + eps\",
+    "f ~ rho + U + D + mu + eps",
     data=df_log
 ).fit()
 ```
