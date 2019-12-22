@@ -300,8 +300,13 @@ def nondim(df, df_dim, rowname="rowname", ktol=1e6, eps=1e-15):
         sort=False,
         ignore_index=True
     )
+
+    ## Negate and pad
+    cols = df.drop(rowname, axis=1).columns
+    df[cols] = -df[cols]
     df = pad_row(df, df_stacked)
 
+    ## Solve
     df_res = express(df, df_stacked, rowname="rowname", ktol=1e6)
 
     return df_res

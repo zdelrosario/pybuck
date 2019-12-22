@@ -154,7 +154,7 @@ class TestNondim(unittest.TestCase):
         df = bu.col_matrix(q = dict(L=1))
         df_res = bu.nondim(df, df_dim)
 
-        df_true = bu.col_matrix(q = dict(u=0.5, v=0.5))
+        df_true = bu.col_matrix(q = dict(u=-0.5, v=-0.5))
 
         pd.testing.assert_frame_equal(
             df_res,
