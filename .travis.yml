@@ -1,3 +1,14 @@
 language: python
+
 script:
- - cd tests; python -m unittest discover
+ - cd tests; coverage run -m unittest discover
+
+install:
+ - pip install codecov
+
+after_success:
+ - cd tests; codecov
+
+env:
+  global:
+    - CODECOV_TOKEN="40930c60-60e7-4cde-a3bf-9681fd4319d9"
