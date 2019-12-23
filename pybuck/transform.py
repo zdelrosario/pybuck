@@ -17,32 +17,29 @@ import warnings
 
 ## Inner product
 def inner(df, df_weights, rowname="rowname"):
-    """Compute the inner product between two matrices. Matches the
-    columns of df to the rows of df_weights.
+    """Inner product
 
-    :param df: Left matrix
-    :param df_weights: Right matrix
-    :param rowname: Column name of rownames, default "rowname"
+    Compute the inner product between two matrices. Matches the columns of df to
+    the rows of df_weights.
 
-    :type df: DataFrame
-    :type df_weights: DataFrame
-    :type rowname: string
+    Args:
+        df (DataFrame): Left matrix
+        df_weights (DataFrame): Right matrix
+        rowname (str): Rownames which define new column names
 
-    :returns: Inner product
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Inner product
 
     Examples:
 
-    from pybuck import *
-
-    df = col_matrix(
-        v = dict(x=+1, y=+1),
-        w = dict(x=-1, y=+1)
-    )
-    df_weights = col_matrix(z = dict(v=1, w=1))
-
-    df_res = inner(df, df_weights)
-    df
+        >>> from pybuck import *
+        >>> df = col_matrix(
+        >>>     v = dict(x=+1, y=+1),
+        >>>     w = dict(x=-1, y=+1)
+        >>> )
+        >>> df_weights = col_matrix(z = dict(v=1, w=1))
+        >>> df_res = inner(df, df_weights)
+        >>> df
 
     """
     ## Check invariants
@@ -94,7 +91,9 @@ def inner(df, df_weights, rowname="rowname"):
 
 ## Re-expression
 def express(df, df_basis, rowname="rowname", ktol=1e6):
-    """Express a set of vectors in a target basis. Range (columnspace) is
+    """Express vectors in a target basis
+
+    Express a set of vectors in a target basis. Range (columnspace) is
     considered for re-expression. Equivalent to solving
 
         Ax = B
@@ -104,30 +103,25 @@ def express(df, df_basis, rowname="rowname", ktol=1e6):
         A = df_basis.values
         B = df.values
 
-    :param df: Given set of vectors to re-express
-    :param df_basis: Given basis
-    :param rowname: Column name of rownames, default "rowname"
-    :param ktol: Maximum condition number for basis, default 1e6
+    Args:
+        df (DataFrame): Given set of vectors to re-express
+        df_basis (DataFrame): Given basis
+        rowname (str): Rownames which define new column names
+        ktol (float): Maximum condition number for basis, default 1e6
 
-    :type df: DataFrame
-    :type df_basis: DataFrame
-    :type rowname: string
-    :type ktol: float
-
-    :returns: Set of re-expressed vectors
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Set of re-expressed vectors
 
     Examples:
 
-    from pybuck import *
-    df = col_matrix(v = dict(x=1, y=1))
-    df_basis = col_matrix(
-        v1 = dict(x=+1, y=+1),
-        v2 = dict(x=+1, y=-1)
-    )
-
-    df_x = express(df_b, df_basis)
-    df_x
+        >>> from pybuck import *
+        >>> df = col_matrix(v = dict(x=1, y=1))
+        >>> df_basis = col_matrix(
+        >>>     v1 = dict(x=+1, y=+1),
+        >>>     v2 = dict(x=+1, y=-1)
+        >>> )
+        >>> df_x = express(df_b, df_basis)
+        >>> df_x
 
     """
     ## Check invariants
@@ -184,24 +178,23 @@ def express(df, df_basis, rowname="rowname", ktol=1e6):
 
 ## Nullspace computation
 def null(A, eps=1e-15):
-    """Computes a basis for the nullspace of a matrix
+    """Compute nullspace
 
-    :param A: Rectangular matrix
-    :param eps: Singular value tolerance for nullspace detection
+    Computes a basis for the nullspace of a matrix.
 
-    :type A: numpy 2d array
-    :type eps: float
+    Args:
+        A (np.array): Rectangular matrix
+        eps (float): Singular value tolerance for nullspace detection
 
-    :returns: basis for matrix nullspace
-    :rtype: numpy 2d array
+    Returns:
+        np.array: Basis for matrix nullspace
 
     Examples:
 
-    from pybuck import null
-    import numpy as np
-
-    A = np.arange(9).reshape((3, -1))
-    N = null(A)
+        >>> from pybuck import null
+        >>> import numpy as np
+        >>> A = np.arange(9).reshape((3, -1))
+        >>> N = null(A)
 
     """
     u, s, vh = svd(A)
@@ -215,31 +208,29 @@ def null(A, eps=1e-15):
 def pi_basis(df, eps=1e-15, rowname="rowname"):
     """Computes a basis for the pi subspace.
 
-    :param df: Dimension matrix
-    :param eps: Singular value tolerance; default = 1e-15
-    :param rowname: Column name of rownames, default "rowname"
+    Take a dimension matrix (as DataFrame) and returns a basis for its nullspace
+    (the pi subspace).
 
-    :type df: DataFrame
-    :type eps: float
-    :type rowname: string
+    Args:
+        df (DataFrame): Dimension matrix
+        eps (float): Singular value tolerance; default = 1e-15
+        rowname (str): Rownames which define new column names
 
-    :returns: Basis for pi subspace
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Basis for pi subspace
 
     Examples:
 
-    from pybuck import *
-
-    df_dim = col_matrix(
-        rho = dict(M=1, L=-3),
-        U   = dict(L=1, T=-1),
-        D   = dict(L=1),
-        mu  = dict(M=1, L=-1, T=-1),
-        eps = dict(L=1)
-    )
-
-    df_pi = pi_basis(df_dim)
-    df_pi
+        >>> from pybuck import *
+        >>> df_dim = col_matrix(
+        >>>     rho = dict(M=1, L=-3),
+        >>>     U   = dict(L=1, T=-1),
+        >>>     D   = dict(L=1),
+        >>>     mu  = dict(M=1, L=-1, T=-1),
+        >>>     eps = dict(L=1)
+        >>> )
+        >>> df_pi = pi_basis(df_dim)
+        >>> df_pi
 
     """
     ## Check invariants
@@ -260,28 +251,30 @@ def pi_basis(df, eps=1e-15, rowname="rowname"):
 
 ## Canonical non-dimensionalizing factor
 def nondim(df, df_dim, rowname="rowname", ktol=1e6, eps=1e-15):
-    """Computes the canonical non-dimensionalizing factor for given physical
-    quantities
+    """Non-dimensionalize by physical dimensions
 
-    :param df: Dimensions of target quantity, column per quantity
-    :param df_dim: Dimension matrix for physical system
-    :param rowname: Column name of rownames, default "rowname"
-    :param ktol: Condition number warning tolerance; default 1e6
-    :param eps: Nullspace singular value threshold; default 1e-15
+    Computes the canonical non-dimensionalizing factor for given physical
+    quantities.
 
-    :type df: DataFrame
-    :type df: DataFrame
-    :type rowname: string
-    :type ktol: float
-    :type eps: float
+    Args:
+        df (DataFrame): Dimensions of target quantity, column per quantity
+        df_dim (DataFrame): Dimension matrix for physical system
+        rowname (str): Rownames which define new column names
+        ktol (float): Condition number warning tolerance; default 1e6
+        eps (float): Nullspace singular value threshold; default 1e-15
 
-    :returns: Canonical non-dimensionalizing factor(s)
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Canonical non-dimensionalizing factor(s)
 
     Examples:
 
+        >>> from pybuck import *
+        >>> df_dim = row_matrix(q=dict(L=1))
+        >>> df = col_matrix(q=dict(L=1))
+        >>> nondim(df, df_dim)
+
     References:
-    Z. del Rosario, M. Lee, and G. Iaccarino, "Lurking Variable Detection via Dimensional Analysis" (2019) SIAM/ASA Journal on Uncertainty Quantification (Theorem 8.1)
+        Z. del Rosario, M. Lee, and G. Iaccarino, "Lurking Variable Detection via Dimensional Analysis" (2019) SIAM/ASA Journal on Uncertainty Quantification (Theorem 8.1)
 
     """
     ## Check invariants

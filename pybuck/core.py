@@ -47,32 +47,29 @@ def spread(df, key, value, fill=nan, drop=False):
     return df_new
 
 def transpose(df, rowname="rowname"):
-    """
-    Transpose a dataframe around a single `rowname` column.
+    """Transpose a DataFrame
 
-    :param df: Matrix to transpose, must have column `rowname`
-    :param rowname: Rownames which define new column names
+    Transpose a DataFrame around a single `rowname` column.
 
-    :type df: DataFrame
-    :type rowname: string
+    Args:
+        df (DataFrame): Matrix to transpose, must have column `rowname`
+        rowname (str): Rownames which define new column names
 
-    :returns: Transposed result
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Transposed result
 
     Examples:
 
-    from pybuck import *
-
-    df = col_matrix(x=pencil(a=1, b=1), y=pencil(a=-1, y=-1))
-    df
-    # >>>   rowname  x  y
-    # >>> 0       a  1 -1
-    # >>> 1       b  1 -1
-
-    transpose(df)
-    # >>>   rowname  a  b
-    # >>> 0       x  1  1
-    # >>> 1       y -1 -1
+        >>> from pybuck import *
+        >>> df = col_matrix(x=dict(a=1, b=1), y=dict(a=-1, y=-1))
+        >>> df
+          rowname  x  y
+        0       a  1 -1
+        1       b  1 -1
+        >>> transpose(df)
+          rowname  a  b
+        0       x  1  1
+        1       y -1 -1
 
     """
     cols = [col for col in df.columns if col != rowname]
@@ -91,28 +88,29 @@ def transpose(df, rowname="rowname"):
 ## Constructor functions
 # --------------------------------------------------
 def col_matrix(rowname="rowname", **kwargs):
-    """Create a matrix via column construction. Automatically fills zero entries.
+    """Matrix via column construction
+
+    Create a matrix via column construction. Automatically fills zero entries.
     Intended for use with dict().
 
-    :param rowname: Name of rowname column; default = "rowname"
-    :param col: Name of col
+    Args:
+        rowname (str): Name of rowname column; default = "rowname"
+        col (dict): Column definition. Column name inferred from keyword.
+            Column entries given by dictionary.
 
-    :type rowname: string
-    :type col: dict
-
-    :returns: Dense matrix
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Dense matrix
 
     Examples:
 
-    from pybuck import *
-    df_dim = col_matrix(
-        rho = dict(M=1, L=-3),
-        U   = dict(L=1, T=-1),
-        D   = dict(L=1),
-        mu  = dict(M=1, L=-1, T=-1),
-        eps = dict(L=1)
-    )
+        >>> from pybuck import *
+        >>> df_dim = col_matrix(
+        >>>     rho = dict(M=1, L=-3),
+        >>>     U   = dict(L=1, T=-1),
+        >>>     D   = dict(L=1),
+        >>>     mu  = dict(M=1, L=-1, T=-1),
+        >>>     eps = dict(L=1)
+        >>> )
 
     """
     ## Get full list of rows and columns
@@ -138,49 +136,52 @@ def col_matrix(rowname="rowname", **kwargs):
     return DataFrame(data)
 
 def row_matrix(rowname="rowname", **kwargs):
-    """Create a matrix via row construction. Automatically fills zero entries.
+    """Matrix via row construction
+
+    Create a matrix via row construction. Automatically fills zero entries.
     Intended for use with dict().
 
-    :param row: Name of row
-    :type row: dict
+    Args:
+        rowname (str): Name of rowname column; default = "rowname"
+        row (dict): Row definition. Row name inferred from keyword.
+            Row entries given by dictionary.
 
-    :returns: Dense matrix
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Dense matrix
 
     Examples:
 
-    from pybuck import *
-    df_pi = row_matrix(
-        Re = dict(rho=1, U=1, D=1, mu=-1),
-        R  = dict(D=1, eps=-1)
-    )
+        >>> from pybuck import *
+        >>> df_pi = row_matrix(
+        >>>     Re = dict(rho=1, U=1, D=1, mu=-1),
+        >>>     R  = dict(D=1, eps=-1)
+        >>> )
+
     """
     df_col = col_matrix(rowname=rowname, **kwargs)
     return transpose(df_col)
 
 def add_col(df, rowname="rowname", **kwargs):
-    """Add a column to a DataFrame, matching existing rownames.
+    """Add a column
 
-    :param df: Data to mutate
-    :param rowname: Rownames to match; default = "rowname"
-    :param col: Column to add; name inferred from keyword. May provide
-               as array of proper length or as dict.
+    Add a column to a DataFrame, matching existing rownames.
 
-    :type df: DataFrame
-    :type rowname: string
-    :type col: array or dict
+    Args:
+        df (DataFrame): Data to mutate
+        rowname (str): Rownames to match; default = "rowname"
+        col (dict): Column to add; name inferred from keyword. May provide
+            as array of proper length or as dict.
 
-    :returns: df with added columns
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Original df with added columns
 
     :pre: (len(col) == df.shape[0]) | isinstance(col, dict)
 
     Examples:
 
-    from pybuck import *
-
-    df = col_matrix(rho = dict(M=1, L=-3), U = dict(L=1, T=-1))
-    df = add_col(df, D=dict(L=1), v=[0,0,1])
+        >>> from pybuck import *
+        >>> df = col_matrix(rho = dict(M=1, L=-3), U = dict(L=1, T=-1))
+        >>> df = add_col(df, D=dict(L=1), v=[0,0,1])
 
     """
     ## Check invariants
@@ -214,27 +215,23 @@ def add_col(df, rowname="rowname", **kwargs):
 def add_row(df, rowname="rowname", **kwargs):
     """Add a column to a DataFrame, matching existing rownames.
 
-    :param df: Data to mutate
-    :param rowname: Rownames to match; default = "rowname"
-    :param row: Row to add; name inferred from keyword. May provide
-                as array of proper length or as dict.
+    Args:
+        df (DataFrame): Data to mutate
+        rowname (str): Rownames to match; default = "rowname"
+        row (dict): Row to add; name inferred from keyword. May provide
+                    as array of proper length or as dict.
 
-    :type df: DataFrame
-    :type rowname: string
-    :type row: array or dict
-
-    :returns: df with added rows
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Original df with added rows
 
     :pre: (len(row) == df.shape[1]) | isinstance(col, dict)
 
     Examples:
 
-    from pybuck import *
-
-    df = row_matrix(v = dict(x=1, y=1, z=1))
-    df = add_row(df, w = dict(y=-1))
-    df
+        >>> from pybuck import *
+        >>> df = row_matrix(v = dict(x=1, y=1, z=1))
+        >>> df = add_row(df, w = dict(y=-1))
+        >>> df
 
     """
     ## Implement in terms of add_col()
@@ -244,16 +241,26 @@ def add_row(df, rowname="rowname", **kwargs):
     return transpose(df_tmp, rowname=rowname)
 
 def pad_row(df, df_ref, rowname="rowname"):
-    """Pad a target DataFrame with zero-rows to match a reference.
+    """Pad DataFrame to match a reference
 
-    :param df: Data to pad
-    :param df_ref: Reference for padding
+    Pad a target DataFrame with zero-rows to match a reference.
 
-    :type df: DataFrame
-    :type df_ref: DataFrame
+    Args:
+        df (DataFrame): Data to pad
+        df_ref (DataFrame): Reference for padding
 
-    :returns: Row-padded dataframe
-    :rtype: DataFrame
+    Returns:
+        DataFrame: Row-padded dataframe
+
+    Examples:
+        >>> from pybuck import *
+        >>> df = row_matrix(u=dict(x=1, y=1))
+        >>> df_ref = row_matrix(
+        >>>      u=dict(x=1, y=1),
+        >>>      v=dict(x=0, y=0)
+        >>> )
+        >>> pad_row(df, df_ref)
+
     """
     ## Check invariants
     if not (rowname in df.columns):
@@ -274,3 +281,12 @@ def pad_row(df, df_ref, rowname="rowname"):
         df = add_row(df, **pack)
 
     return df
+
+# --------------------------------------------------
+def stringexp(df, rowname="rowname", mode="plain"):
+    """Exponentiate and stringify a DataFrame of exponents.
+
+    :param df: Data to exponentiate and stringify
+    :param rowname: Name of rowname column; default = "rowname"
+    :param mode:
+    """
