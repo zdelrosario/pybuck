@@ -2,15 +2,15 @@ __all__ = [
     "express",
     "inner",
     "nondim",
+    "normalize",
     "null",
     "pi_basis"
 ]
 
 from .core import add_row, pad_row, transpose
-from numpy import pad, dot
-from numpy.linalg import lstsq, cond
-from pandas import DataFrame, Categorical, concat
-from scipy.linalg import svd
+from numpy import pad, dot, number
+from numpy.linalg import lstsq, norm, cond, svd
+from pandas import DataFrame, Series, Categorical, concat
 from scipy import compress
 from scipy import transpose as t_mat
 import warnings
@@ -301,5 +301,39 @@ def nondim(df, df_dim, rowname="rowname", ktol=1e6, eps=1e-15):
 
     ## Solve
     df_res = express(df, df_stacked, rowname="rowname", ktol=1e6)
+
+    return df_res
+
+## Normalize columns
+def normalize(df):
+    """Length-normalize numeric columns
+
+    Length-normalizes the numeric columns of a given dataframe.
+
+    Args:
+        df (DataFrame): Dimensions of target quantity, column per quantity
+
+    Returns:
+        DataFrame: Data with normalized columns
+
+    Examples:
+
+        >>> from pybuck import *
+        >>> df = col_matrix(
+        >>>     v1=dict(x=+1, y=+1),
+        >>>     v2=dict(x=+1, y=-1)
+        >>> )
+        >>> normalize(df))
+
+    """
+    cols_numeric = df.select_dtypes(include=number).columns.tolist()
+    lengths = Series(
+        data=norm(df[cols_numeric].values, axis=0),
+        index=cols_numeric
+    )
+
+    df_res = df.copy()
+    for col in cols_numeric:
+        df_res[col] = df_res[col] / lengths[col]
 
     return df_res

@@ -173,6 +173,19 @@ class TestNondim(unittest.TestCase):
         with self.assertRaises(ValueError):
             bu.nondim(bu.col_matrix(q = dict(T=1)), df_dim)
 
+# --------------------------------------------------
+class TestNormalize(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def test_normalize(self):
+        df_target = bu.col_matrix(v=dict(x=1, y=1))
+        df_true = bu.col_matrix(v=dict(x=1/np.sqrt(2), y=1/np.sqrt(2)))
+
+        df_res = bu.normalize(df_target)
+
+        self.assertTrue(df_true.equals(df_res))
+
 ## Run tests
 if __name__ == "__main__":
     unittest.main()
