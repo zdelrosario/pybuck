@@ -303,7 +303,7 @@ def complete(df, df_dim, eps=1e-15, rowname="rowname"):
             df.set_index(rowname),
         ),
         axis=1,
-        join="inner",
+        join="outer",
     ).fillna(0.).reset_index()
 
     return df_return
