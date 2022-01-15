@@ -1,7 +1,9 @@
 __all__ = [
-    "angles"
+    "angles",
+    "rank",
 ]
 
+from numpy.linalg import matrix_rank
 from scipy.linalg import subspace_angles
 
 ## Assess subspace angles
@@ -45,3 +47,23 @@ def angles(df1, df2, rowname="rowname"):
             .values
 
     return subspace_angles(A1, A2)
+
+## Assess matrix rank
+def rank(df, rowname="rowname", **kwargs):
+    r"""Compute the rank of a matrix
+
+    Args:
+        df (DataFrame): Matrix
+
+    Returns:
+        int: Rank of matrix
+    """
+    ## Check invariants
+    if not (rowname in df.columns):
+        raise ValueError("df must have {} column".format(rowname))
+
+    A = df.sort_values(rowname) \
+           .drop(rowname, axis=1) \
+           .values
+
+    return matrix_rank(A, **kwargs)

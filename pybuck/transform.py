@@ -1,4 +1,5 @@
 __all__ = [
+    "complete",
     "express",
     "inner",
     "nondim",
@@ -246,6 +247,64 @@ def pi_basis(df, eps=1e-15, rowname="rowname"):
 
     for i in range(N.shape[1]):
         df_return["pi{}".format(i)] = N[:, i]
+
+    return df_return
+
+## Complete a basis for the pi subspace
+def complete(df, df_dim, eps=1e-15, rowname="rowname"):
+    """Completes a basis for the pi subspace.
+
+    Take a dimension matrix (as DataFrame) and incomplete basis for the pi
+    subspace, and return a basis for its nullspace (the pi subspace). Useful
+
+    Args:
+        df (DataFrame): Incomplete basis for pi subspace; columns are vectors of target space
+        df_dim (DataFrame): Dimension matrix
+        eps (float): Singular value tolerance; default = 1e-15
+        rowname (str): Rownames which define new column names
+
+    Returns:
+        DataFrame: Basis for pi subspace
+
+    Examples:
+
+        >>> from pybuck import *
+        >>> df_dim = col_matrix(
+        >>>     rho = dict(M=1, L=-3),
+        >>>     U   = dict(L=1, T=-1),
+        >>>     D   = dict(L=1),
+        >>>     mu  = dict(M=1, L=-1, T=-1),
+        >>>     eps = dict(L=1)
+        >>> )
+        >>> df_pi = pi_basis(df_dim)
+        >>> df_pi
+
+    """
+    ## Check invariants
+    if not (rowname in df.columns):
+        raise ValueError("df must have {} column".format(rowname))
+    if not (rowname in df_dim.columns):
+        raise ValueError("df_dim must have {} column".format(rowname))
+
+    ## Combine data
+    df_wk = df_dim.append(transpose(df), sort=True).fillna(0.)
+
+    ## Compute nullspace
+    A = df_wk.drop(rowname, axis=1).values
+    N = null(A, eps=eps)
+    df_new = DataFrame({rowname: df_wk.drop(rowname, axis=1).columns})
+    for i in range(N.shape[1]):
+        df_new["pi{}".format(i)] = N[:, i]
+
+    ## Construct dataframe output
+    df_return = concat(
+        (
+            df_new.set_index(rowname),
+            df.set_index(rowname),
+        ),
+        axis=1,
+        join="inner",
+    ).fillna(0.).reset_index()
 
     return df_return
 
