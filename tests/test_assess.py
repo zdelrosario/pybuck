@@ -25,6 +25,13 @@ class TestAssess(unittest.TestCase):
         with self.assertRaises(ValueError):
             bu.angles(self.df, pd.DataFrame())
 
+    def test_rank(self):
+        df_low = bu.col_matrix(v1=dict(x=1, y=1), v2=dict(x=2, y=2))
+        df_full = bu.col_matrix(v1=dict(x=1, y=1), v2=dict(x=1, y=0))
+
+        self.assertTrue(bu.rank(df_low) == 1)
+        self.assertTrue(bu.rank(df_full) == 2)
+
 ## Run tests
 if __name__ == "__main__":
     unittest.main()
