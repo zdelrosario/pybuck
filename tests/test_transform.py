@@ -174,6 +174,39 @@ class TestNondim(unittest.TestCase):
             bu.nondim(bu.col_matrix(q = dict(T=1)), df_dim)
 
 # --------------------------------------------------
+class TestComplete(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def test_complete(self):
+        df_dim = bu.col_matrix(
+            rho = dict(M=1, L=-3),
+            U   = dict(L=1, T=-1),
+            D   = dict(L=1),
+            mu  = dict(M=1, L=-1, T=-1),
+            eps = dict(L=1)
+        )
+        df = bu.col_matrix(Re=dict(rho=1, U=1, D=1, mu=-1))
+        df_res = bu.complete(df, df_dim)
+        df_true = bu.col_matrix(Re=dict(rho=1.0, U=1.0, D=1.0, mu=-1.0, eps=0.0))
+
+        # Original weights not scrambled
+        self.assertTrue(
+            df_res[["rowname", "Re"]]
+            .sort_values("rowname")
+            .reset_index(drop=True)
+            .equals(
+                df_true
+                .sort_values("rowname")
+                .reset_index(drop=True)
+            )
+        )
+        # Given basis dimensionless
+        self.assertTrue(np.all(
+            np.abs(bu.inner(df_dim, df_res).drop("rowname", axis=1).values) < 1e-6
+        ))
+
+# --------------------------------------------------
 class TestNormalize(unittest.TestCase):
     def setUp(self):
         pass
